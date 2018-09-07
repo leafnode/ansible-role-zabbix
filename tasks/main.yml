@@ -1,0 +1,94 @@
+---
+- name: Install gpg key
+  apt_key:
+    id: 79EA5ED4
+    url: http://repo.zabbix.com/zabbix-official-repo.key
+
+- name: Installing repository Ubuntu
+  apt_repository:
+    repo: "deb http://repo.zabbix.com/zabbix/{{ zabbix_version }}/ubuntu/ {{ ansible_distribution_release }} main"
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: Installing repository Ubuntu
+  apt_repository:
+    repo: "deb-src http://repo.zabbix.com/zabbix/{{ zabbix_version }}/ubuntu/ {{ ansible_distribution_release }} main"
+    state: present
+    update_cache: yes
+  when: ansible_distribution == "Ubuntu"
+
+- name: Installing zabbix-server-{{ zabbix_database_type }}
+  apt:
+    pkg: zabbix-server-{{ zabbix_database_type }}
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid_time | default(3600) }}"
+
+- name: Install zabbix-web
+  apt:
+    pkg: zabbix-frontend-php
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid_time | default(3600) }}"
+
+- name: "Installing zabbix-server-{{ zabbix_database_type }}"
+  apt:
+    pkg: zabbix-server-{{ zabbix_database_type }}
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid_time | default(3600) }}"
+
+- name: Create zabbix server configuration
+  template:
+    src: zabbix_server.conf.j2
+    dest: /etc/zabbix/zabbix_server.conf
+    force: yes
+    owner: zabbix
+    group: zabbix
+    mode: 600
+  notify: zabbix-server restart
+
+- name: Configure zabbix-web
+  template:
+    src: zabbix.conf.php.j2
+    dest: /etc/zabbix/web/zabbix.conf.php
+    owner: zabbix
+    group: zabbix
+    mode: 0644
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version | version_compare('16.04', '<')
+
+- name: Configure zabbix-web
+  template:
+    src: zabbix.conf.php.j2
+    dest: /usr/share/zabbix/conf/zabbix.conf.php
+    owner: zabbix
+    group: zabbix
+    mode: 0644
+  when: ansible_distribution == "Ubuntu" and ansible_distribution_version | version_compare('16.04', '>=')
+
+- name: Create apache2 zabbix custom configuration
+  template:
+    src: zabbix.conf.j2
+    force: yes
+    dest: /etc/apache2/sites-available/zabbix.conf
+
+- name: Enable apache2 vhosts
+  shell: a2ensite zabbix.conf
+  notify:
+    - restart apache
+
+- name: Ensure alertscripts dir exists
+  file:
+    path: /usr/lib/zabbix/alertscripts
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create zabbix sendmail script
+  template:
+    src: zabbix-sendmail.j2
+    dest: /usr/lib/zabbix/alertscripts/zabbix-sendmail
+    owner: zabbix
+    group: zabbix
+    mode: 0755

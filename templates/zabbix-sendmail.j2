@@ -1,0 +1,7 @@
+#!/bin/sh
+
+export zabbixbody="To: $1\nFrom: {{ zabbix_email_from }}\nSubject: $2\n$3"
+
+echo "$zabbixbody" > /tmp/zabbix-mail-input_$$
+
+ssmtp -v $1 < /tmp/zabbix-mail-input_$$ && rm /tmp/zabbix-mail-input_$$
