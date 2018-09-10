@@ -72,8 +72,15 @@
     force: yes
     dest: /etc/apache2/sites-available/zabbix.conf
 
+- name: Check if zabbix vhost is enabled
+  stat:
+    path: /etc/apache2/sites-enabled/zabbix.conf
+  register: zabbix_apache_vhost
+  changed_when: false
+
 - name: Enable apache2 vhosts
   shell: a2ensite zabbix.conf
+  when: zabbix_apache_vhost.stat.exists == false
   notify:
     - restart apache
 
