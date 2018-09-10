@@ -9,4 +9,5 @@
     ssmtp_auth_pass: "secret"
   roles:
     - ssmtp
+    - apache
     - ansible-role-zabbix
