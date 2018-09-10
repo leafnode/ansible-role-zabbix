@@ -1,6 +1,12 @@
 ---
 - hosts: localhost
   remote_user: root
+  vars:
+    ssmtp_root: user@example.com
+    ssmtp_mailhub: smtp.example.com
+    ssmtp_hostname: smtp.example.com
+    ssmtp_auth_user: "someuser"
+    ssmtp_auth_pass: "secret"
   roles:
     - ssmtp
     - ansible-role-zabbix
