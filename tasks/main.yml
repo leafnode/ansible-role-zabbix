@@ -99,3 +99,12 @@
     owner: zabbix
     group: zabbix
     mode: 0755
+
+- name: Install Slack notification script
+  template:
+    src: slack.j2
+    dest: /usr/lib/zabbix/alertscripts/slack
+    owner: zabbix
+    group: zabbix
+    mode: 0755
+  when: zabbix_slack_webhook is defined
