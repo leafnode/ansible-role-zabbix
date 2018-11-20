@@ -1,9 +1,10 @@
 ---
 zabbix_version: 3.4
 zabbix_database_type: mysql
-zabbix_domain: zabbix.supervisor.local
+zabbix_domain: zabbix.local
 zabbix_email_from: zabbix@example.com
 zabbix_server_listenport: 10051
+zabbix_slack_username: Zabbix
 
 zabbix_db: 'zabbix'
 zabbix_db_host: '127.0.0.1'
