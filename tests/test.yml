@@ -8,6 +8,6 @@
     ssmtp_auth_user: "someuser"
     ssmtp_auth_pass: "secret"
   roles:
-    - ssmtp
-    - apache
+    - iroquoisorg.ssmtp
+    - iroquoisorg.apache
     - ansible-role-zabbix
