@@ -14,35 +14,35 @@
   apt_repository:
     repo: "deb-src http://repo.zabbix.com/zabbix/{{ zabbix_version }}/ubuntu/ {{ ansible_distribution_release }} main"
     state: present
-    update_cache: yes
+    update_cache: true
   when: ansible_distribution == "Ubuntu"
 
 - name: Installing zabbix-server-{{ zabbix_database_type }}
   apt:
     pkg: zabbix-server-{{ zabbix_database_type }}
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: "{{ apt_cache_valid_time | default(3600) }}"
 
 - name: Install zabbix-web
   apt:
     pkg: zabbix-frontend-php
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: "{{ apt_cache_valid_time | default(3600) }}"
 
 - name: "Installing zabbix-server-{{ zabbix_database_type }}"
   apt:
     pkg: zabbix-server-{{ zabbix_database_type }}
     state: present
-    update_cache: yes
+    update_cache: true
     cache_valid_time: "{{ apt_cache_valid_time | default(3600) }}"
 
 - name: Create zabbix server configuration
   template:
     src: zabbix_server.conf.j2
     dest: /etc/zabbix/zabbix_server.conf
-    force: yes
+    force: true
     owner: zabbix
     group: zabbix
     mode: 600
@@ -69,7 +69,7 @@
 - name: Create apache2 zabbix custom configuration
   template:
     src: zabbix.conf.j2
-    force: yes
+    force: true
     dest: /etc/apache2/sites-available/zabbix.conf
 
 - name: Check if zabbix vhost is enabled
